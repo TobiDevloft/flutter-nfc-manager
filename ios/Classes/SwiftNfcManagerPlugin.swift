@@ -18,6 +18,8 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
     set { _tags = newValue }
   }
 
+  private var shouldInvalidateSessionAfterFirstRead: Bool = true
+
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "plugins.flutter.io/nfc_manager", binaryMessenger: registrar.messenger())
     let instance = SwiftNfcManagerPlugin(channel)
@@ -748,6 +750,7 @@ extension SwiftNfcManagerPlugin: NFCTagReaderSessionDelegate {
       if let error = error {
         // skip tag detection
         print(error)
+        if !self.shouldInvalidateSessionAfterFirstRead { session.restartPolling() }
         return
       }
 
@@ -755,11 +758,13 @@ extension SwiftNfcManagerPlugin: NFCTagReaderSessionDelegate {
         if let error = error {
           // skip tag detection
           print(error)
+          if !self.shouldInvalidateSessionAfterFirstRead { session.restartPolling() }
           return
         }
 
         self.tags[handle] = tag
         self.channel.invokeMethod("onDiscovered", arguments: data.merging(["handle": handle]) { cur, _ in cur })
+        if !self.shouldInvalidateSessionAfterFirstRead { session.restartPolling() }
       }
     }
   }

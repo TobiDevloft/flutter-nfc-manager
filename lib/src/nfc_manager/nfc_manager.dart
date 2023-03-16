@@ -46,6 +46,7 @@ class NfcManager {
     required NfcTagCallback onDiscovered,
     Set<NfcPollingOption>? pollingOptions,
     String? alertMessage,
+    bool? invalidateAfterFirstRead = true,
     NfcErrorCallback? onError,
   }) async {
     _onDiscovered = onDiscovered;
@@ -55,6 +56,7 @@ class NfcManager {
       'pollingOptions':
           pollingOptions.map((e) => $NfcPollingOptionTable[e]).toList(),
       'alertMessage': alertMessage,
+      'invalidateAfterFirstRead': invalidateAfterFirstRead,
     });
   }
 
